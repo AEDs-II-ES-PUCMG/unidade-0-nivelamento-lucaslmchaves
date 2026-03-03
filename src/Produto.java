@@ -1,9 +1,12 @@
+import java.sql.Date;
 import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-public class Produto {
+public abstract class Produto {
 	
 	private static final double MARGEM_PADRAO = 0.2;
-	private String descricao;
+	protected String descricao;
 	protected double precoCusto;
 	protected double margemLucro;
 	
@@ -67,4 +70,60 @@ public class Produto {
     	
 		return String.format("NOME: " + descricao + ": " + moeda.format(valorDeVenda()));
 	}
+	  /** 
+     * Igualdade de produtos: caso possuam o mesmo nome/descrição.  
+     * @param obj Outro produto a ser comparado  
+     * @return booleano true/false conforme o parâmetro possua a descrição igual ou não a este produto. 
+     */ 
+    @Override 
+    public boolean equals(Object obj){ 
+        Produto outro = (Produto)obj; 
+        return this.descricao.toLowerCase().equals(outro.descricao.toLowerCase()); 
+    }
+    /** 
+     * Gera uma linha de texto a partir dos dados do produto 
+     * @return Uma string no formato "tipo; descrição;preçoDeCusto;margemDeLucro;[dataDeValidade]" 
+     */ 
+    public String gerarDadosTexto(){
+          // fallback implementation; subclasses override when necessary
+          // tipos: 1 = não perecível, 2 = perecível
+          int tipo = (this instanceof ProdutoNaoPerecivel) ? 1 : 2;
+          // garantir duas casas decimais com ponto como separador
+          String precoFormatado = String.format("%.2f", precoCusto).replace(",", ".");
+          String margemFormatada = String.format("%.2f", margemLucro).replace(",", ".");
+          return String.format("%d;%s;%s;%s", tipo, descricao, precoFormatado, margemFormatada);
+    }
+                  
+     /** 
+     * Cria um produto a partir de uma linha de dados em formato texto. A linha de dados deve estar de acordo com a 
+formatação 
+     * "tipo; descrição;preçoDeCusto;margemDeLucro;[dataDeValidade]" 
+     * ou o funcionamento não será garantido. Os tipos são 1 para produto não perecível e 2 para perecível. 
+     * @param linha Linha com os dados do produto a ser criado. 
+     * @return Um produto com os dados recebidos 
+     */ 
+    /** 
+     * Cria um produto a partir de uma linha de dados em formato texto. A linha de dados deve estar de acordo com a 
+     * formatação 
+     * "tipo; descrição;preçoDeCusto;margemDeLucro;[dataDeValidade]" 
+     * ou o funcionamento não será garantido. Os tipos são 1 para produto não perecível e 2 para perecível. 
+     * @param linha Linha com os dados do produto a ser criado. 
+     * @return Um produto com os dados recebidos 
+     */ 
+     static Produto criarDoTexto(String linha){ 
+          Produto novoProduto = null; 
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String[] atributos = linha.split(";");
+        int tipo = Integer.parseInt(atributos[0]);
+        String descricao = atributos[1];
+        double precoCusto = Double.parseDouble(atributos[2]);
+        double margemLucro = Double.parseDouble(atributos[3]);
+        if(tipo==1){ 
+            novoProduto = new ProdutoNaoPerecivel(descricao, precoCusto, margemLucro); 
+        } else { 
+               LocalDate dataValidade = LocalDate.parse(atributos[4], formatter);
+            novoProduto = new ProdutoPerecivel(descricao, precoCusto, margemLucro, dataValidade); 
+        }
+        return novoProduto; 
+}
 }
