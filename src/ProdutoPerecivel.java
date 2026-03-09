@@ -33,18 +33,14 @@ public class ProdutoPerecivel extends Produto {
         return dados;
     }
 
-     /** 
-     * Gera uma linha de texto a partir dos dados do produto. Preço e margem de lucro vão formatados com 2 casas 
-decimais. 
-     * Data de validade vai no formato dd/mm/aaaa 
-     * @return Uma string no formato "2; descrição;preçoDeCusto;margemDeLucro;dataDeValidade" 
+    /** * Gera uma linha de texto a partir dos dados do produto perecível.
+     * @return Uma string no formato "2;descrição;preçoDeCusto;margemDeLucro;dataDeValidade"
      */
-    @Override
+@Override
     public String gerarDadosTexto() {
-        String precoFormatado = String.format("%.2f", precoCusto).replace(",", ".");
-        String margemFormatada = String.format("%.2f", margemLucro).replace(",", ".");
+        String preco = String.format("%.2f", precoCusto).replace(",", ".");
+        String margem = String.format("%.2f", margemLucro).replace(",", ".");
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        String dataFormatada = formato.format(dataDeValidade);
-        return String.format("2;%s;%s;%s;%s", descricao, precoFormatado, margemFormatada, dataFormatada);   
-}
+        return String.format("2;%s;%s;%s;%s", descricao, preco, margem, formato.format(dataDeValidade));
+    }
 }
