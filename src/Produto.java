@@ -82,7 +82,8 @@ public abstract class Produto {
     /** * Gera uma linha de texto a partir dos dados do produto 
      * @return Uma string no formato "tipo; descrição;preçoDeCusto;margemDeLucro;[dataDeValidade]" 
      */ 
-    public abstract String gerarDadosTexto(); // Removido o corpo aqui, pois é abstrato
+    public abstract String gerarDadosTexto();
+     
                   
      /** * Cria um produto a partir de uma linha de dados em formato texto. A linha de dados deve estar de acordo com a 
 formatação 
